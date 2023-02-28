@@ -10,6 +10,7 @@ export const ZustandImmer = () => {
       <div>
         <input
           type="text"
+          placeholder="my task"
           value={input}
           onChange={(e) => handleInputChange(e.target.value)}
         />
@@ -64,40 +65,35 @@ const deleteTodo = (todos: Todo[], index: number): Todo[] => {
   return newTodos;
 };
 
-const addTodoUsingImmer = (todos: Todo[], input: string): Todo[] => [
-  ...todos,
-  { task: input, done: false },
-];
-
 const useTodoStore = create<TodoStore>((set) => ({
   todos: [{ task: "idk", done: false }],
   input: "",
 
-  handleInputChange: (task: string) => {
-    set((state) => ({
-      ...state,
-      input: task,
-    }));
-  },
-
-  addTodo: () =>
+  handleInputChange: (task: string) =>
     set(
-      produce((state) => {
-        state.todos = addTodoUsingImmer(state.todos, state.input);
+      produce<TodoStore>((state) => {
+        state.input = task;
       })
     ),
 
-  toggleTodo: (index: number) => {
-    set((state) => ({
-      ...state,
-      todos: toggleTodo(state.todos, index),
-    }));
-  },
+  addTodo: () =>
+    set(
+      produce<TodoStore>((state) => {
+        state.todos = addTodo(state.todos, state.input);
+      })
+    ),
 
-  deleteTodo: (index: number) => {
-    set((state) => ({
-      ...state,
-      todos: deleteTodo(state.todos, index),
-    }));
-  },
+  toggleTodo: (index: number) =>
+    set(
+      produce<TodoStore>((state) => {
+        state.todos = toggleTodo(state.todos, index);
+      })
+    ),
+
+  deleteTodo: (index: number) =>
+    set(
+      produce<TodoStore>((state) => {
+        state.todos = deleteTodo(state.todos, index);
+      })
+    ),
 }));
