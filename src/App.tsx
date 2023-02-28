@@ -1,3 +1,4 @@
+import produce from "immer";
 import { create } from "zustand";
 
 export const ZustandImmer = () => {
@@ -63,6 +64,11 @@ const deleteTodo = (todos: Todo[], index: number): Todo[] => {
   return newTodos;
 };
 
+const addTodoUsingImmer = (todos: Todo[], input: string): Todo[] => [
+  ...todos,
+  { task: input, done: false },
+];
+
 const useTodoStore = create<TodoStore>((set) => ({
   todos: [{ task: "idk", done: false }],
   input: "",
@@ -74,12 +80,12 @@ const useTodoStore = create<TodoStore>((set) => ({
     }));
   },
 
-  addTodo: () => {
-    set((state) => ({
-      ...state,
-      todos: addTodo(state.todos, state.input),
-    }));
-  },
+  addTodo: () =>
+    set(
+      produce((state) => {
+        state.todos = addTodoUsingImmer(state.todos, state.input);
+      })
+    ),
 
   toggleTodo: (index: number) => {
     set((state) => ({
